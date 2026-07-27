@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#151515" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MTG Scanner" />
+  <title>MTG Scanner</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>MTG Scanner</h1>
+      <p>Scanne, identifie, collectionne.</p>
+    </div>
+    <button id="soundToggle" class="icon-btn" aria-label="Activer ou désactiver les sons">🔊</button>
+  </header>
+
+  <main>
+    <section id="dashboard" class="card stats-grid">
+      <div><span id="totalCards">0</span><small>cartes</small></div>
+      <div><span id="uniqueCards">0</span><small>références</small></div>
+      <div><span id="totalValue">0,00 €</span><small>valeur estimée</small></div>
+    </section>
+
+    <nav class="tabs" aria-label="Navigation principale">
+      <button class="tab active" data-target="scannerView">Scanner</button>
+      <button class="tab" data-target="collectionView">Collection</button>
+    </nav>
+
+    <section id="scannerView" class="view active">
+      <div class="card">
+        <h2>Scanner une carte</h2>
+        <p class="muted">Photographie le haut de la carte, bien droit et avec une bonne lumière.</p>
+        <label class="camera-box" for="cameraInput">
+          <span>📷</span>
+          <strong>Prendre une photo</strong>
+          <small>ou choisir une image</small>
+        </label>
+        <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
+        <img id="preview" class="preview hidden" alt="Aperçu de la carte" />
+        <div id="ocrStatus" class="status hidden"></div>
+      </div>
+
+      <div class="card">
+        <h2>Nom de la carte</h2>
+        <div class="search-row">
+          <input id="cardNameInput" type="search" placeholder="Ex. Sol Ring" autocomplete="off" />
+          <button id="searchButton" class="primary">Rechercher</button>
+        </div>
+        <div id="suggestions" class="suggestions"></div>
+      </div>
+
+      <div id="resultsCard" class="card hidden">
+        <div class="section-title-row">
+          <div>
+            <h2 id="resultsTitle">Éditions proposées</h2>
+            <p class="muted">Sélectionne l’impression exacte grâce à son image.</p>
+          </div>
+          <select id="finishFilter" aria-label="Filtrer par finition">
+            <option value="all">Toutes</option>
+            <option value="nonfoil">Normales</option>
+            <option value="foil">Foil</option>
+            <option value="etched">Etched</option>
+          </select>
+        </div>
+        <div id="results" class="results-grid"></div>
+      </div>
+    </section>
+
+    <section id="collectionView" class="view">
+      <div class="card">
+        <div class="section-title-row">
+          <div>
+            <h2>Ma collection</h2>
+            <p class="muted">Les données restent enregistrées sur cet appareil.</p>
+          </div>
+          <button id="exportButton" class="secondary">Exporter CSV</button>
+        </div>
+        <input id="collectionSearch" type="search" placeholder="Rechercher dans la collection" />
+        <div id="collectionList" class="collection-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="addDialog">
+    <form method="dialog" class="dialog-card">
+      <button class="dialog-close" value="cancel" aria-label="Fermer">×</button>
+      <img id="dialogImage" alt="Version sélectionnée" />
+      <h2 id="dialogName"></h2>
+      <p id="dialogSet" class="muted"></p>
+
+      <div class="form-grid">
+        <label>Finition
+          <select id="dialogFinish"></select>
+        </label>
+        <label>État
+          <select id="dialogCondition">
+            <option value="NM">Near Mint</option>
+            <option value="EX">Excellent</option>
+            <option value="GD">Good</option>
+            <option value="LP">Light Played</option>
+            <option value="PL">Played</option>
+          </select>
+        </label>
+        <label>Quantité
+          <input id="dialogQuantity" type="number" min="1" value="1" />
+        </label>
+        <label>Emplacement
+          <input id="dialogLocation" type="text" placeholder="Classeur 1, page 4" />
+        </label>
+      </div>
+
+      <div class="price-box">
+        <span>Valeur estimée</span>
+        <strong id="dialogPrice">—</strong>
+      </div>
+
+      <button id="confirmAdd" type="button" class="primary full">Ajouter à la collection</button>
+    </form>
+  </dialog>
+
+  <template id="resultTemplate">
+    <article class="result-card">
+      <img loading="lazy" alt="" />
+      <div class="result-body">
+        <h3></h3>
+        <p class="set-line"></p>
+        <p class="variant-line"></p>
+        <strong class="price"></strong>
+        <button class="primary">Choisir cette version</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
