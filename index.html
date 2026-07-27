@@ -29,82 +29,58 @@
           <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         </div>
         <div id="scanFlash" class="scan-flash"></div>
-
         <header class="scanner-topbar">
-          <div class="session-value">
-            <small>SESSION</small>
-            <strong id="totalValue">0,00 €</strong>
-          </div>
+          <div class="session-value"><small>SESSION</small><strong id="totalValue">0,00 €</strong></div>
           <div class="session-count"><strong id="totalCards">0</strong><span>cartes</span></div>
           <button id="soundToggle" class="round-btn" aria-label="Activer ou désactiver les sons">🔊</button>
         </header>
-
         <aside class="scanner-rail">
           <button class="rail-btn tab" data-target="collectionView" aria-label="Voir les cartes scannées"><span>▤</span><small>Cartes</small></button>
           <button class="rail-btn" type="button" aria-label="Mode rapide"><span>⚡</span><small>Rapide</small></button>
           <button class="rail-btn" type="button" aria-label="Réglages"><span>⚙</span><small>Réglages</small></button>
         </aside>
-
         <div class="recognition-panel">
           <span id="scannerBadge" class="scanner-badge idle">Arrêté</span>
           <div id="ocrStatus" class="status">Appuie sur Démarrer puis présente une carte entière.</div>
           <div id="lastDetection" class="last-detection hidden"></div>
         </div>
-
         <div class="quick-controls">
           <button class="quick-chip active" type="button"><span>◈</span> Normal</button>
           <button class="quick-chip" type="button"><span>✦</span> Français</button>
           <label class="qty-chip">− <input id="quickQuantity" value="1" inputmode="numeric" aria-label="Quantité" /> +</label>
         </div>
-
         <div class="scanner-actions">
           <button id="startScanner" class="scan-trigger">Démarrer</button>
           <button id="stopScanner" class="scan-trigger stop hidden">Arrêter</button>
         </div>
       </div>
       <canvas id="captureCanvas" hidden></canvas>
-
       <details class="manual-drawer">
         <summary>Recherche manuelle ou photo</summary>
         <div class="manual-tools">
           <label class="camera-box" for="cameraInput"><span>🖼️</span><strong>Choisir une photo</strong></label>
           <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
           <img id="preview" class="preview hidden" alt="Aperçu de la carte" />
-          <div class="search-row">
-            <input id="cardNameInput" type="search" placeholder="Ex. Sol Ring" autocomplete="off" />
-            <button id="searchButton" class="primary">Rechercher</button>
-          </div>
+          <div class="search-row"><input id="cardNameInput" type="search" placeholder="Ex. Sol Ring" autocomplete="off" /><button id="searchButton" class="primary">Rechercher</button></div>
           <div id="suggestions" class="suggestions"></div>
         </div>
       </details>
-
       <section id="resultsCard" class="sheet hidden">
         <div class="sheet-handle"></div>
         <div class="section-title-row">
           <div><h2 id="resultsTitle">Éditions proposées</h2><p class="muted">Choisis l’impression exacte.</p></div>
-          <select id="finishFilter" aria-label="Filtrer par finition">
-            <option value="all">Toutes</option><option value="nonfoil">Normales</option><option value="foil">Foil</option><option value="etched">Etched</option>
-          </select>
+          <select id="finishFilter" aria-label="Filtrer par finition"><option value="all">Toutes</option><option value="nonfoil">Normales</option><option value="foil">Foil</option><option value="etched">Etched</option></select>
         </div>
         <div id="results" class="results-grid"></div>
       </section>
     </section>
-
     <section id="collectionView" class="view collection-view">
-      <header class="collection-header">
-        <button class="back-btn tab" data-target="scannerView" aria-label="Retour au scanner">‹</button>
-        <div><h1>Cartes scannées</h1><p><span id="uniqueCards">0</span> références dans cette session</p></div>
-        <button id="exportButton" class="secondary">CSV</button>
-      </header>
-      <div class="collection-summary">
-        <div><span id="collectionTotalCards">Collection</span><strong>Inventaire local</strong></div>
-        <div><span>Valeur</span><strong id="collectionValueMirror">Voir ci-dessus</strong></div>
-      </div>
+      <header class="collection-header"><button class="back-btn tab" data-target="scannerView" aria-label="Retour au scanner">‹</button><div><h1>Cartes scannées</h1><p><span id="uniqueCards">0</span> références dans cette session</p></div><button id="exportButton" class="secondary">CSV</button></header>
+      <div class="collection-summary"><div><span id="collectionTotalCards">Collection</span><strong>Inventaire local</strong></div><div><span>Valeur</span><strong id="collectionValueMirror">Voir ci-dessus</strong></div></div>
       <input id="collectionSearch" type="search" placeholder="Rechercher une carte" />
       <div id="collectionList" class="collection-list"></div>
     </section>
   </main>
-
   <dialog id="addDialog">
     <form method="dialog" class="dialog-card">
       <button class="dialog-close" value="cancel" aria-label="Fermer">×</button>
@@ -120,12 +96,9 @@
       <button id="confirmAdd" type="button" class="primary full">Ajouter et continuer</button>
     </form>
   </dialog>
-
-  <template id="resultTemplate">
-    <article class="result-card"><img loading="lazy" alt="" /><div class="result-body"><h3></h3><p class="set-line"></p><p class="variant-line"></p><strong class="price"></strong><button class="primary">Choisir</button></div></article>
-  </template>
-
+  <template id="resultTemplate"><article class="result-card"><img loading="lazy" alt="" /><div class="result-body"><h3></h3><p class="set-line"></p><p class="variant-line"></p><strong class="price"></strong><button class="primary">Choisir</button></div></article></template>
   <script src="app.js"></script>
   <script src="scanner-fix.js"></script>
+  <script src="scanner-guard.js"></script>
 </body>
 </html>
