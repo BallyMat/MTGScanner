@@ -15,15 +15,12 @@
 </head>
 <body>
   <header class="topbar">
-    <div>
-      <h1>MTG Scanner</h1>
-      <p>Scanne, identifie, collectionne.</p>
-    </div>
+    <div><h1>MTG Scanner</h1><p>Scanne, identifie, collectionne.</p></div>
     <button id="soundToggle" class="icon-btn" aria-label="Activer ou désactiver les sons">🔊</button>
   </header>
 
   <main>
-    <section id="dashboard" class="card stats-grid">
+    <section class="card stats-grid">
       <div><span id="totalCards">0</span><small>cartes</small></div>
       <div><span id="uniqueCards">0</span><small>références</small></div>
       <div><span id="totalValue">0,00 €</span><small>valeur estimée</small></div>
@@ -35,39 +32,49 @@
     </nav>
 
     <section id="scannerView" class="view active">
-      <div class="card">
-        <h2>Scanner une carte</h2>
-        <p class="muted">Photographie le haut de la carte, bien droit et avec une bonne lumière.</p>
-        <label class="camera-box" for="cameraInput">
-          <span>📷</span>
-          <strong>Prendre une photo</strong>
-          <small>ou choisir une image</small>
-        </label>
-        <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
-        <img id="preview" class="preview hidden" alt="Aperçu de la carte" />
-        <div id="ocrStatus" class="status hidden"></div>
+      <div class="card scanner-card">
+        <div class="section-title-row">
+          <div><h2>Scan continu</h2><p class="muted">Garde la carte dans le cadre. Le scan se relance automatiquement.</p></div>
+          <span id="scannerBadge" class="scanner-badge idle">Arrêté</span>
+        </div>
+
+        <div class="live-camera">
+          <video id="cameraVideo" autoplay muted playsinline></video>
+          <div class="card-guide"><span>Place le nom de la carte ici</span></div>
+          <div id="scanFlash" class="scan-flash"></div>
+          <div id="cameraPlaceholder" class="camera-placeholder"><span>📷</span><strong>Caméra inactive</strong></div>
+        </div>
+        <canvas id="captureCanvas" hidden></canvas>
+
+        <div class="scanner-actions">
+          <button id="startScanner" class="primary">Démarrer la caméra</button>
+          <button id="stopScanner" class="secondary hidden">Arrêter</button>
+        </div>
+        <div id="ocrStatus" class="status">Appuie sur « Démarrer la caméra » puis autorise l’accès.</div>
+        <div id="lastDetection" class="last-detection hidden"></div>
       </div>
 
-      <div class="card">
-        <h2>Nom de la carte</h2>
-        <div class="search-row">
-          <input id="cardNameInput" type="search" placeholder="Ex. Sol Ring" autocomplete="off" />
-          <button id="searchButton" class="primary">Rechercher</button>
-        </div>
-        <div id="suggestions" class="suggestions"></div>
+      <div class="card compact-card">
+        <details>
+          <summary>Recherche manuelle ou photo</summary>
+          <div class="manual-tools">
+            <label class="camera-box" for="cameraInput"><span>🖼️</span><strong>Choisir une photo</strong></label>
+            <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
+            <img id="preview" class="preview hidden" alt="Aperçu de la carte" />
+            <div class="search-row">
+              <input id="cardNameInput" type="search" placeholder="Ex. Sol Ring" autocomplete="off" />
+              <button id="searchButton" class="primary">Rechercher</button>
+            </div>
+            <div id="suggestions" class="suggestions"></div>
+          </div>
+        </details>
       </div>
 
       <div id="resultsCard" class="card hidden">
         <div class="section-title-row">
-          <div>
-            <h2 id="resultsTitle">Éditions proposées</h2>
-            <p class="muted">Sélectionne l’impression exacte grâce à son image.</p>
-          </div>
+          <div><h2 id="resultsTitle">Éditions proposées</h2><p class="muted">Choisis l’impression exacte. Le scan reprendra ensuite automatiquement.</p></div>
           <select id="finishFilter" aria-label="Filtrer par finition">
-            <option value="all">Toutes</option>
-            <option value="nonfoil">Normales</option>
-            <option value="foil">Foil</option>
-            <option value="etched">Etched</option>
+            <option value="all">Toutes</option><option value="nonfoil">Normales</option><option value="foil">Foil</option><option value="etched">Etched</option>
           </select>
         </div>
         <div id="results" class="results-grid"></div>
@@ -77,10 +84,7 @@
     <section id="collectionView" class="view">
       <div class="card">
         <div class="section-title-row">
-          <div>
-            <h2>Ma collection</h2>
-            <p class="muted">Les données restent enregistrées sur cet appareil.</p>
-          </div>
+          <div><h2>Ma collection</h2><p class="muted">Les données restent enregistrées sur cet appareil.</p></div>
           <button id="exportButton" class="secondary">Exporter CSV</button>
         </div>
         <input id="collectionSearch" type="search" placeholder="Rechercher dans la collection" />
@@ -93,50 +97,20 @@
     <form method="dialog" class="dialog-card">
       <button class="dialog-close" value="cancel" aria-label="Fermer">×</button>
       <img id="dialogImage" alt="Version sélectionnée" />
-      <h2 id="dialogName"></h2>
-      <p id="dialogSet" class="muted"></p>
-
+      <h2 id="dialogName"></h2><p id="dialogSet" class="muted"></p>
       <div class="form-grid">
-        <label>Finition
-          <select id="dialogFinish"></select>
-        </label>
-        <label>État
-          <select id="dialogCondition">
-            <option value="NM">Near Mint</option>
-            <option value="EX">Excellent</option>
-            <option value="GD">Good</option>
-            <option value="LP">Light Played</option>
-            <option value="PL">Played</option>
-          </select>
-        </label>
-        <label>Quantité
-          <input id="dialogQuantity" type="number" min="1" value="1" />
-        </label>
-        <label>Emplacement
-          <input id="dialogLocation" type="text" placeholder="Classeur 1, page 4" />
-        </label>
+        <label>Finition<select id="dialogFinish"></select></label>
+        <label>État<select id="dialogCondition"><option value="NM">Near Mint</option><option value="EX">Excellent</option><option value="GD">Good</option><option value="LP">Light Played</option><option value="PL">Played</option></select></label>
+        <label>Quantité<input id="dialogQuantity" type="number" min="1" value="1" /></label>
+        <label>Emplacement<input id="dialogLocation" type="text" placeholder="Classeur 1, page 4" /></label>
       </div>
-
-      <div class="price-box">
-        <span>Valeur estimée</span>
-        <strong id="dialogPrice">—</strong>
-      </div>
-
-      <button id="confirmAdd" type="button" class="primary full">Ajouter à la collection</button>
+      <div class="price-box"><span>Valeur estimée</span><strong id="dialogPrice">—</strong></div>
+      <button id="confirmAdd" type="button" class="primary full">Ajouter et reprendre le scan</button>
     </form>
   </dialog>
 
   <template id="resultTemplate">
-    <article class="result-card">
-      <img loading="lazy" alt="" />
-      <div class="result-body">
-        <h3></h3>
-        <p class="set-line"></p>
-        <p class="variant-line"></p>
-        <strong class="price"></strong>
-        <button class="primary">Choisir cette version</button>
-      </div>
-    </article>
+    <article class="result-card"><img loading="lazy" alt="" /><div class="result-body"><h3></h3><p class="set-line"></p><p class="variant-line"></p><strong class="price"></strong><button class="primary">Choisir cette version</button></div></article>
   </template>
 
   <script src="app.js"></script>
